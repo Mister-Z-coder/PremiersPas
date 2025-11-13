@@ -1,0 +1,72 @@
+﻿@model FrontendMVC.Models.ViewModels.EcoleViewModel
+@{
+    ViewData["Title"] = "Détails de l'école";
+}
+
+<div class="card shadow-lg border-0 w-100 mx-auto mt-4" style="max-width: 800px;">
+    <div class="card-header bg-dark text-white text-center py-3 rounded-top">
+        <h3 class="mb-0"><i class="bi bi-building-fill"></i> Détails de l’école</h3>
+    </div>
+
+    <div class="card-body px-4 py-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Matricule_Secope" class="form-label fw-semibold"></label>
+                <input asp-for="Matricule_Secope" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="TitreEcole" class="form-label fw-semibold"></label>
+                <input asp-for="TitreEcole" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-12">
+                <label asp-for="AdresseEcole" class="form-label fw-semibold"></label>
+                <input asp-for="AdresseEcole" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-12">
+                <label asp-for="HistoriqueEcole" class="form-label fw-semibold"></label>
+                <textarea asp-for="HistoriqueEcole" class="form-control" rows="4" readonly></textarea>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Arrete_Agreement" class="form-label fw-semibold"></label>
+                <input asp-for="Arrete_Agreement" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="LatitudeEcole" class="form-label fw-semibold"></label>
+                <input asp-for="LatitudeEcole" class="form-control" readonly />
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="LongitudeEcole" class="form-label fw-semibold"></label>
+                <input asp-for="LongitudeEcole" class="form-control" readonly />
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.PhotoEcoleUrl))
+            {
+                <div class="col-md-12 text-center mt-3">
+                    <img src="@Model.PhotoEcoleUrl"
+                         alt="Photo de l'école"
+                         class="img-fluid rounded shadow-sm border"
+                         style="max-height: 250px; object-fit: cover;" />
+                </div>
+            }
+
+            <div class="col-12 text-center pt-3">
+                <a asp-controller="Ecoles" asp-action="Index" class="btn btn-secondary px-4 me-2">
+                    <i class="bi bi-arrow-left-circle"></i> Retour
+                </a>
+                <a asp-controller="Ecoles" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-white px-4">
+                    <i class="bi bi-pencil-square"></i> Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

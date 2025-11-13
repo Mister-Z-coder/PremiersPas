@@ -1,0 +1,154 @@
+﻿@model IEnumerable<FrontendMVC.Models.ViewModels.EcoleViewModel>
+@{
+    ViewData["Title"] = "Liste des Écoles";
+}
+
+<div class="card shadow-lg border-0 mt-4">
+    <div class="card-header bg-dark text-white text-center py-3 rounded-top">
+        <h3 class="mb-0"><i class="bi bi-building"></i> Liste des Écoles</h3>
+    </div>
+
+    <div class="card-body px-4 py-4">
+        <div class="row align-items-center mb-4">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <form asp-controller="Ecoles" asp-action="Index" method="get" class="d-flex">
+                    <input type="search" class="form-control me-2" name="search" value="@ViewData["CurrentFilter"]" placeholder="Rechercher une école..." aria-label="Rechercher">
+                    <button class="btn btn-outline-dark" type="submit"><i class="bi bi-search"></i></button>
+                </form>
+            </div>
+            <div class="col-md-6 text-md-end text-center">
+                <a asp-controller="Ecoles" asp-action="Create" class="btn btn-success px-3">
+                    <i class="bi bi-plus-circle"></i> Nouvelle école
+                </a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-dark text-white">
+                    <tr>
+                        <th>N°</th>
+                        <th>Matricule</th>
+                        <th>Nom de l’école</th>
+                        <th>Adresse</th>
+                        <th>Photo</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int num = (ViewBag.CurrentPage -1) * ViewBag.TotalPages + 1;
+                        foreach (var ecole in Model)
+                        {
+                            <tr class="table-row">
+                                <td class="fw-semibold">@num</td>
+                                <td>@ecole.Matricule_Secope</td>
+                                <td >@ecole.TitreEcole</td>
+                                <td>@ecole.AdresseEcole</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(ecole.PhotoEcoleUrl))
+                                    {
+                                        <img src="@ecole.PhotoEcoleUrl"
+                                             alt="Photo de l’école"
+                                             class="img-thumbnail shadow-sm"
+                                             style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+                                             onclick="openModal('@ecole.PhotoEcoleUrl')" />
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted fst-italic">Aucune photo</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-controller="Ecoles" asp-action="Details" asp-route-id="@ecole.Id" class="btn btn-warning text-white btn-sm">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                        <a asp-controller="Ecoles" asp-action="Edit" asp-route-id="@ecole.Id" class="btn btn-success btn-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a asp-controller="Ecoles" asp-action="Delete" asp-route-id="@ecole.Id" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            num++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                <i class="bi bi-exclamation-circle"></i> Aucune école enregistrée.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card-footer bg-light border-top-0 py-3">
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.PreviousPage)">Précédent</a>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Page @ViewBag.CurrentPage sur @ViewBag.TotalPages</span>
+                </li>
+                <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@(ViewBag.NextPage)">Suivant</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- MODALE PHOTO -->
+<div id="imageModal"
+     class="d-none position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center"
+     style="z-index: 1050;">
+    <span onclick="closeModal()"
+          class="position-absolute top-0 end-0 m-4 fs-2 text-white"
+          style="cursor:pointer;">&times;</span>
+    <img id="modalImage" class="img-fluid rounded shadow-lg" style="max-height:90%; max-width:90%;" />
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function openModal(src) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modalImg.src = src;
+            modal.classList.remove('d-none');
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').classList.add('d-none');
+        }
+    </script>
+
+    <style>
+        /* Effet hover doux sur les lignes */
+        .table-row:hover {
+            background-color: #f8f9fa !important;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Style pagination */
+        .pagination .page-link {
+            border-radius: 50px;
+            margin: 0 3px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #212529;
+            border-color: #212529;
+        }
+    </style>
+}
