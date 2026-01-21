@@ -65,7 +65,48 @@ namespace FrontendMVC.Controllers
             return View();
         }
 
+        //Avec méthode de récuperation des Erreurs depuis l'api et reformatage des messages d'erreurs au frontend sur base des Viewmodels
         //POST : /Eleves/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(EleveViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            //Gestion de la photo
+            if(model.PhotoFile != null)
+            {
+                string uploadDir = Path.Combine(_env.WebRootPath, "eleves");
+                
+                //Le créer s'il n'existe pas
+                if (!Directory.Exists(uploadDir))
+                    Directory.CreateDirectory(uploadDir);
+
+                //Generer le nom du fichier
+                string fileName = Guid.NewGuid() + Path.GetExtension(model.PhotoFile.FileName);
+                string filePath = Path.Combine(uploadDir, fileName);
+
+                //Enregistrement du fichier sur le serveur
+                using(var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.PhotoFile.CopyToAsync(stream);
+                }
+
+                model.PhotoEleveUrl = "/eleves/" + fileName;
+            }
+            
+            var result = await _elevesApiService.AddAsync(model);
+
+            if(result.Success)
+                return RedirectToAction(nameof(Index));
+
+            ModelState.AddModelError("", result.Message ?? "Erreur lors de la création.");
+            return View(model);
+        }
+
+        /* Avec Méthode de récuperation des Erreurs depuis l'api et uniformisation backend et frontend
+         //POST : /Eleves/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(EleveViewModel model)
@@ -116,7 +157,7 @@ namespace FrontendMVC.Controllers
             // Si succès
             return RedirectToAction(nameof(Index));
         }
-
+         */
         //GET : Eleves/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
