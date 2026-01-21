@@ -11,15 +11,15 @@ namespace FrontendMVC.Models.ViewModels
     {
         public int Id { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Nom")]
         public string NomEleve { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Post-nom")]
         public string PostNomEleve { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Sexe")]
         public string SexeEleve { get; set; }
 
@@ -28,11 +28,11 @@ namespace FrontendMVC.Models.ViewModels
 
         public string? PhotoEleveUrl { get; set; } // chemin de l'image déjà stockée
 
-        [Required]
+        //[Required]
         [Display(Name = "Lieu de naissance")]
         public string LieuNaisEleve { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Date de naissance")]
         [DataType(DataType.Date)]
         public string DateNaisEleve { get; set; }

@@ -73,35 +73,48 @@ namespace FrontendMVC.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            //Gestion de la photo
-            if(model.PhotoFile != null)
+            // Gestion de la photo
+            if (model.PhotoFile != null)
             {
                 string uploadDir = Path.Combine(_env.WebRootPath, "eleves");
-                
-                //Le créer s'il n'existe pas
                 if (!Directory.Exists(uploadDir))
                     Directory.CreateDirectory(uploadDir);
 
-                //Generer le nom du fichier
                 string fileName = Guid.NewGuid() + Path.GetExtension(model.PhotoFile.FileName);
                 string filePath = Path.Combine(uploadDir, fileName);
 
-                //Enregistrement du fichier sur le serveur
-                using(var stream = new FileStream(filePath, FileMode.Create))
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await model.PhotoFile.CopyToAsync(stream);
                 }
 
                 model.PhotoEleveUrl = "/eleves/" + fileName;
             }
-            
+
             var result = await _elevesApiService.AddAsync(model);
 
-            if(result.Success)
-                return RedirectToAction(nameof(Index));
+            if (!result.Success)
+            {
+                // S’il y a des erreurs provenant du backend
+                if (result.Errors != null && result.Errors.Any())
+                {
+                    foreach (var errorMessage in result.Errors)
+                    {
+                        // clé vide "" pour erreur globale
+                        ModelState.AddModelError(errorMessage,result.Message);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", result.Message ?? "Erreur lors de la création.");
+                }
 
-            ModelState.AddModelError("", result.Message ?? "Erreur lors de la création.");
-            return View(model);
+                // Retourne la vue avec ModelState rempli pour afficher les erreurs
+                return View(model);
+            }
+
+            // Si succès
+            return RedirectToAction(nameof(Index));
         }
 
         //GET : Eleves/Edit/5

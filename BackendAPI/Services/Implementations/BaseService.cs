@@ -44,7 +44,7 @@ namespace BackendAPI.Services.Implementations
             }
 
             if(errors.Any())
-                throw new InvalidInputException("Veuillez corriger les champs obligatoires", errors);
+                throw new InvalidInputException("Veuillez remplir ce champ", errors);
 
             var entity = _mapper.Map<T>(dto);
             await _repo.AddAsync(entity);
@@ -142,7 +142,7 @@ namespace BackendAPI.Services.Implementations
                 
             }
             if (errors.Any())
-                throw new InvalidInputException("Veuillez corriger les champs obligatoires",errors);
+                throw new InvalidInputException("Veuillez remplir ce champ", errors);
 
             _mapper.Map(dto,existing);
 
