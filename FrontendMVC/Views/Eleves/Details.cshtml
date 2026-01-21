@@ -1,0 +1,87 @@
+﻿@model FrontendMVC.Models.ViewModels.EleveViewModel
+@{
+    ViewData["Title"] = "Détails de l'élève";
+}
+
+<div class="card shadow-lg border-0 w-100 mx-auto mt-4" style="max-width: 800px;">
+    <div class="card-header bg-dark text-white text-center py-3 rounded-top">
+        <h3 class="mb-0"><i class="bi bi-building-fill"></i> Détails de l’élève</h3>
+    </div>
+
+    <div class="card-body px-4 py-4">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="NomEleve" class="form-label fw-semibold"></label>
+                <input asp-for="NomEleve" class="form-control" placeholder="Ex: John" readonly/>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="PostNomEleve" class="form-label fw-semibold"></label>
+                <input asp-for="PostNomEleve" class="form-control" placeholder="Ex: Doe" readonly />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="SexeEleve" class="form-label fw-semibold"></label>
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           asp-for="SexeEleve"
+                           value="Masculin"
+                           id="sexeM" readonly/>
+                    <label class="form-check-label" for="sexeM">
+                        Masculin
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="radio"
+                           asp-for="SexeEleve"
+                           value="Féminin"
+                           id="sexeF" readonly/>
+                    <label class="form-check-label" for="sexeF">
+                        Féminin
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="LieuNaisEleve" class="form-label fw-semibold"></label>
+                <input asp-for="LieuNaisEleve" class="form-control" placeholder="Ex: Kinshasa" readonly/>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="DateNaisEleve" class="form-label fw-semibold"></label>
+                <input asp-for="DateNaisEleve" class="form-control" type="date" placeholder="Ex: jj/mm/aaaa" readonly />
+            </div>
+
+            <div class="col-md-12">
+                <label asp-for="PhotoFile" class="form-label fw-semibold">Photo</label>
+                <input type="file" asp-for="PhotoFile" class="form-control" readonly/>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.PhotoEleveUrl))
+            {
+                <div class="col-md-12 text-center mt-3">
+                    <img src="@Model.PhotoEleveUrl"
+                         alt="Photo de l'élève"
+                         class="img-fluid rounded shadow-sm border"
+                         style="max-height: 250px; object-fit: cover;" />
+                </div>
+            }
+
+            <div class="col-12 text-center pt-3">
+                <a asp-controller="Eleves" asp-action="Index" class="btn btn-secondary px-4 me-2">
+                    <i class="bi bi-arrow-left-circle"></i> Retour
+                </a>
+                <a asp-controller="Eleves" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-white px-4">
+                    <i class="bi bi-pencil-square"></i> Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

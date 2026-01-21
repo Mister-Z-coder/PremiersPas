@@ -15,23 +15,37 @@ namespace BackendAPI.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class InscriptionController : ControllerBase
+    public class InscriptionsController : ControllerBase
     {
         private readonly IService<Inscription> _serviceInscription;
 
-        public InscriptionController(IService<Inscription> serviceInscription)
+        public InscriptionsController(IService<Inscription> serviceInscription)
         {
             _serviceInscription = serviceInscription;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
+            Expression<Func<Inscription, bool>> predicate = e => true; // prédicat par défaut (tout sélectionner)
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                predicate = e =>
+                    (e.AnneeScolaire.AnneeScolaire != 0 && e.AnneeScolaire.AnneeScolaire.ToString().Contains(search)) ||
+                    (e.Eleve.NomEleve != null && e.Eleve.NomEleve.Contains(search)) ||
+                    (e.Ecole.TitreEcole != null && e.Ecole.TitreEcole.Contains(search));
+            }
+
             var route = Request.Path.Value;
-            var response = await _serviceInscription.GetAllAsync<InscriptionDto>(filter, route, i => i.AnneeScolaire, i => i.Ecole, i => i.Eleve);
+            var response = String.IsNullOrWhiteSpace(search)
+                ? await _serviceInscription.GetAllAsync<InscriptionDto>(filter, route, i => i.AnneeScolaire, i => i.Ecole, i => i.Eleve)
+                : await _serviceInscription.GetBySearchStringAsync<InscriptionDto>(filter, route, predicate, i => i.AnneeScolaire, i => i.Ecole, i => i.Eleve);
+           
             return Ok(response);
         }
 
+        /*
         [HttpGet("search")]
         public async Task<IActionResult> GetSearchString([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
@@ -49,7 +63,7 @@ namespace BackendAPI.Controllers
             var response = await _serviceInscription.GetBySearchStringAsync<InscriptionDto>(filter, route, predicate);
 
             return Ok(response);
-        }
+        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)

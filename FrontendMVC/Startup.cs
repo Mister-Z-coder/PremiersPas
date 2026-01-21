@@ -49,11 +49,18 @@ namespace FrontendMVC
 
             //Ajout services génériques et spécifiques
             services.AddScoped(typeof(IApiService<>), typeof(BaseApiService<,>));
-            services.AddScoped<IAnneeScolaireApiService, AnneeScolaireApiService>();
-            services.AddScoped<IEcoleApiService, EcoleApiService>();
-            services.AddScoped<IEleveApiService, EleveApiService>();
-            services.AddScoped<IInscriptionApiService, InscriptionApiService>();
+            services.AddScoped<IAnneeScolaireApiService, AnneeScolairesApiService>();
+            services.AddScoped<IEcoleApiService, EcolesApiService>();
+            services.AddScoped<IEleveApiService, ElevesApiService>();
+            services.AddScoped<IInscriptionApiService, InscriptionsApiService>();
 
+
+            services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;           // toutes les routes générées seront converties en minuscules
+                options.LowercaseQueryStrings = true;   // optionnel : les query strings seront aussi en minuscules
+            });
+            services.AddHttpContextAccessor();
 
         }
 

@@ -12,26 +12,27 @@ using System.Threading.Tasks;
 
 namespace FrontendMVC.Controllers
 {
-    public class EcolesController : Controller
+    public class ElevesController : Controller
     {
-        private readonly IEcoleApiService _ecoleApiService;
+        private readonly IEleveApiService _elevesApiService;
         private readonly IWebHostEnvironment _env;
-        public EcolesController(IEcoleApiService ecoleApiService, IWebHostEnvironment env)
+        public ElevesController(IEleveApiService elevesApiService, IWebHostEnvironment env)
         {
-            _ecoleApiService = ecoleApiService;
+            _elevesApiService = elevesApiService;
             _env = env;
         }
 
-        //GET : /Ecoles
+        //GET : /Eleves
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string search = "")
         {
             var filter = new PaginationFilter(page, pageSize);
 
-            PagedResponse<List<EcoleViewModel>> result = await _ecoleApiService.GetAllAsync(search, filter);
+            PagedResponse<List<EleveViewModel>> result=  await _elevesApiService.GetAllAsync(search, filter);
+            
 
             //Pour eviter des erreurs null
             if (result.Data == null)
-                return View(new List<EcoleViewModel>());
+                return View(new List<EleveViewModel>());
 
             
 
@@ -49,25 +50,25 @@ namespace FrontendMVC.Controllers
         }
         
 
-        //GET : /Ecoles/Details/5
+        //GET : /Eleves/Details/5
         public async Task<IActionResult> DetailsAsync(int id)
         {
-            var result = await _ecoleApiService.GetByIdAsync(id);
+            var result = await _elevesApiService.GetByIdAsync(id);
             if (result.Data == null)
                 return NotFound();
             return View(result.Data);
         }
 
-        //GET : /Ecoles/Create
+        //GET : /Eleves/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        //POST : /Ecoles/Create
+        //POST : /Eleves/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(EcoleViewModel model)
+        public async Task<IActionResult> Create(EleveViewModel model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -75,7 +76,7 @@ namespace FrontendMVC.Controllers
             //Gestion de la photo
             if(model.PhotoFile != null)
             {
-                string uploadDir = Path.Combine(_env.WebRootPath, "ecoles");
+                string uploadDir = Path.Combine(_env.WebRootPath, "eleves");
                 
                 //Le créer s'il n'existe pas
                 if (!Directory.Exists(uploadDir))
@@ -91,10 +92,10 @@ namespace FrontendMVC.Controllers
                     await model.PhotoFile.CopyToAsync(stream);
                 }
 
-                model.PhotoEcoleUrl = "/ecoles/" + fileName;
+                model.PhotoEleveUrl = "/eleves/" + fileName;
             }
             
-            var result = await _ecoleApiService.AddAsync(model);
+            var result = await _elevesApiService.AddAsync(model);
 
             if(result.Success)
                 return RedirectToAction(nameof(Index));
@@ -103,19 +104,19 @@ namespace FrontendMVC.Controllers
             return View(model);
         }
 
-        //GET : Ecoles/Edit/5
+        //GET : Eleves/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var result = await _ecoleApiService.GetByIdAsync(id);
+            var result = await _elevesApiService.GetByIdAsync(id);
             if (result.Data == null)
                 return NotFound();
             return View(result.Data);
         }
 
-        //POST : Ecoles/Edit
+        //POST : Eleves/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id,EcoleViewModel model)
+        public async Task<IActionResult> Edit(int id,EleveViewModel model)
         {
 
 
@@ -124,7 +125,7 @@ namespace FrontendMVC.Controllers
             //Gestion de la photo
             if (model.PhotoFile != null)
             {
-                string uploadDir = Path.Combine(_env.WebRootPath, "ecoles");
+                string uploadDir = Path.Combine(_env.WebRootPath, "eleves");
                 //Le créer s'il n'existe pas
                 if (!Directory.Exists(uploadDir))
                     Directory.CreateDirectory(uploadDir);
@@ -138,18 +139,18 @@ namespace FrontendMVC.Controllers
                 {
                     await model.PhotoFile.CopyToAsync(stream);
                 }
-                model.PhotoEcoleUrl = "/ecoles/" + fileName;
+                model.PhotoEleveUrl = "/eleves/" + fileName;
             }
             else
             {
                 // **Aucune nouvelle photo** => récupérer l'ancienne URL depuis la base
-                var existing = await _ecoleApiService.GetByIdAsync(id);
+                var existing = await _elevesApiService.GetByIdAsync(id);
                 if (existing.Success && existing.Data != null)
                 {
-                    model.PhotoEcoleUrl = existing.Data.PhotoEcoleUrl;
+                    model.PhotoEleveUrl = existing.Data.PhotoEleveUrl;
                 }
             }
-            var result = await _ecoleApiService.UpdateAsync(id, model);
+            var result = await _elevesApiService.UpdateAsync(id, model);
             if (result.Success)
                 return RedirectToAction(nameof(Index));
 
@@ -157,22 +158,22 @@ namespace FrontendMVC.Controllers
             return View(model);
         }
 
-        //GET : /Ecoles/Delete/5
+        //GET : /Eleves/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _ecoleApiService.GetByIdAsync(id);
+            var result = await _elevesApiService.GetByIdAsync(id);
             if (result.Data == null)
                 return NotFound();
 
             return View(result.Data);
         }
 
-        //POST : /Ecoles/Delete/5
+        //POST : /Eleves/Delete/5
         [HttpPost,ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _ecoleApiService.DeleteAsync(id);
+            await _elevesApiService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

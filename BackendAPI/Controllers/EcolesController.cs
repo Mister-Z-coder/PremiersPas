@@ -15,24 +15,37 @@ namespace BackendAPI.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class EcoleController : ControllerBase
+    public class EcolesController : ControllerBase
     {
         private readonly IService<Ecole> _serviceEcole;
 
-        public EcoleController(IService<Ecole> serviceEcole)
+        public EcolesController(IService<Ecole> serviceEcole)
         {
             _serviceEcole = serviceEcole;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
+            Expression<Func<Ecole, bool>> predicate = e => true; // prédicat par défaut (tout sélectionner)
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                predicate = e =>
+                    (e.TitreEcole != null && e.TitreEcole.Contains(search)) ||
+                    (e.Matricule_Secope != null && e.Matricule_Secope.Contains(search)) ||
+                    (e.AdresseEcole != null && e.AdresseEcole.Contains(search));
+            }
+
             var route = Request.Path.Value;
-            var response = await _serviceEcole.GetAllAsync<EcoleDto>(filter, route);
+
+            var response = String.IsNullOrWhiteSpace(search)
+                ? await _serviceEcole.GetAllAsync<EcoleDto>(filter, route)
+                : await _serviceEcole.GetBySearchStringAsync<EcoleDto>(filter, route, predicate);
             return Ok(response);
         }
 
-        [HttpGet("search")]
+        /*[HttpGet]
         public async Task<IActionResult> GetSearchString([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
             Expression<Func<Ecole, bool>> predicate = e => true; // prédicat par défaut (tout sélectionner)
@@ -49,8 +62,8 @@ namespace BackendAPI.Controllers
             var response = await _serviceEcole.GetBySearchStringAsync<EcoleDto>(filter, route,predicate);
 
             return Ok(response);
-        }
-
+        }*/
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {

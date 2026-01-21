@@ -9,11 +9,11 @@ namespace BackendAPI.Exceptions
     public class NotFoundException : BaseException
     {
         public NotFoundException(int id)
-            :base($"Element avec id : {id} est introuvable.",HttpStatusCode.NotFound)
+            :base($"Element avec id : {id} est introuvable.")
         {
         }
         public NotFoundException(string propertyName, string value)
-            :base($"Element avec propriété {propertyName} : {value} est introuvable.", HttpStatusCode.NotFound)
+            :base($"Element avec propriété {propertyName} : {value} est introuvable.")
         {
 
         }

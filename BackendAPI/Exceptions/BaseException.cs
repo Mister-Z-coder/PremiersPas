@@ -12,6 +12,7 @@ namespace BackendAPI.Exceptions
         {
             StatusCode = statusCode;
         }
+        //Definir le code de statut de l'erreur
         public HttpStatusCode StatusCode { get; }
     }
 }

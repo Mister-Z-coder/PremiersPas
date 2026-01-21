@@ -17,7 +17,10 @@ namespace FrontendMVC.Mapper
                 .ReverseMap()
                 .ForMember(dest => dest.PhotoEcoleUrl, opt => opt.MapFrom(source => source.PhotoEcole));
 
-            CreateMap<EleveViewModel, EleveDto>().ReverseMap();
+            CreateMap<EleveViewModel, EleveDto>()
+                .ForMember(dest => dest.PhotoEleve, opt => opt.MapFrom(source => source.PhotoEleveUrl))
+                .ReverseMap()
+                .ForMember(dest => dest.PhotoEleveUrl, opt => opt.MapFrom(source => source.PhotoEleve));
 
             CreateMap<AnneeScolaireViewModel, AnneeScolaireDto>().ReverseMap();
 

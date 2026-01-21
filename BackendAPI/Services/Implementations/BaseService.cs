@@ -28,6 +28,8 @@ namespace BackendAPI.Services.Implementations
 
         public async Task<Response<TDto>> AddAsync<TDto>(TDto dto)
         {
+            var errors = new List<string>();
+
             foreach (var prop in typeof(TDto).GetProperties())
             {
                 if (prop.Name.Contains("Photo"))
@@ -38,9 +40,11 @@ namespace BackendAPI.Services.Implementations
 
                 //Recupérer la nouvelle valeur des propriétés
                 if (prop.GetValue(dto) == null)
-                    throw new InvalidInputException(prop.Name);
-
+                    errors.Add(prop.Name);
             }
+
+            if(errors.Any())
+                throw new InvalidInputException("Veuillez corriger les champs obligatoires", errors);
 
             var entity = _mapper.Map<T>(dto);
             await _repo.AddAsync(entity);
@@ -117,6 +121,8 @@ namespace BackendAPI.Services.Implementations
 
         public async Task<Response<TDto>> UpdateAsync<TDto>(int id, TDto dto)
         {
+            var errors = new List<string>();
+
             var existing = await _repo.GetByIdAsync(id);
             if (existing == null)
                 throw new NotFoundException(id);
@@ -132,9 +138,12 @@ namespace BackendAPI.Services.Implementations
 
                 //Recupérer la nouvelle valeur des propriétés
                 if (prop.GetValue(dto) == null)
-                    throw new InvalidInputException(prop.Name);
+                    errors.Add(prop.Name);
                 
             }
+            if (errors.Any())
+                throw new InvalidInputException("Veuillez corriger les champs obligatoires",errors);
+
             _mapper.Map(dto,existing);
 
             await _repo.UpdateAsync(existing);

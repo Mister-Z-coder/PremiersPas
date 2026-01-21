@@ -8,10 +8,14 @@ namespace BackendAPI.Exceptions
 {
     public class InvalidInputException : BaseException
     {
-        public InvalidInputException(string invalidPropertyMessage) 
-            : base(invalidPropertyMessage, HttpStatusCode.BadRequest)
+
+        public InvalidInputException(string invalidPropertyMessage, IEnumerable<string> errors) 
+            : base(invalidPropertyMessage)
         {
+            Errors = errors.ToList().AsReadOnly();
         }
 
+        //Definir la liste des erreurs en lecture seule
+        public IReadOnlyList<string> Errors { get; }
     }
 }

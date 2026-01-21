@@ -10,8 +10,8 @@ namespace FrontendMVC.Services
 {
     public interface IApiService<TViewModel>
     {
-        Task<PagedResponse<List<TViewModel>>> GetAllAsync(PaginationFilter filter);
-        Task<PagedResponse<List<TViewModel>>> GetBySearchStringAsync(string search, PaginationFilter filter);
+        Task<PagedResponse<List<TViewModel>>> GetAllAsync(string search, PaginationFilter filter);
+        //Task<PagedResponse<List<TViewModel>>> GetBySearchStringAsync(string search, PaginationFilter filter);
         Task<Response<TViewModel>> GetByIdAsync(int id);
         Task<Response<TViewModel>> UpdateAsync(int id, TViewModel entity);
         Task<bool> DeleteAsync(int id);

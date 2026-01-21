@@ -31,7 +31,7 @@ namespace BackendAPI.Exceptions
             {
                 case InvalidInputException invalidEx:
                     statusCode = HttpStatusCode.BadRequest;
-                    response = PaginationHelper.CreateErrorResponse<object>(invalidEx.Message);
+                    response = PaginationHelper.CreateErrorResponse<object>(invalidEx.Message,invalidEx.Errors);
                     break;
 
                 case NotFoundException notFoundEx:

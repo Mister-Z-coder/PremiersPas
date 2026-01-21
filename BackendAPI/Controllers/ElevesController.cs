@@ -15,23 +15,38 @@ namespace BackendAPI.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class EleveController : ControllerBase
+    public class ElevesController : ControllerBase
     {
         private readonly IService<Eleve> _serviceEleve;
 
-        public EleveController(IService<Eleve> serviceEleve)
+        public ElevesController(IService<Eleve> serviceEleve)
         {
             _serviceEleve = serviceEleve;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
+            Expression<Func<Eleve, bool>> predicate = e => true; // prédicat par défaut (tout sélectionner)
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                predicate = e =>
+                    (e.NomEleve != null && e.NomEleve.Contains(search)) ||
+                    (e.PostNomEleve != null && e.PostNomEleve.Contains(search)) ||
+                    (e.SexeEleve != null && e.SexeEleve.Contains(search)) ||
+                    (e.LieuNaisEleve != null && e.LieuNaisEleve.Contains(search));
+            }
+
             var route = Request.Path.Value;
-            var response = await _serviceEleve.GetAllAsync<EleveDto>(filter, route);
+            var response = String.IsNullOrWhiteSpace(search)
+                ? await _serviceEleve.GetAllAsync<EleveDto>(filter, route)
+                : await _serviceEleve.GetBySearchStringAsync<EleveDto>(filter, route, predicate);
+
             return Ok(response);
         }
 
+        /*
         [HttpGet("search")]
         public async Task<IActionResult> GetSearchString([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
@@ -49,7 +64,7 @@ namespace BackendAPI.Controllers
             var response = await _serviceEleve.GetBySearchStringAsync<EleveDto>(filter, route, predicate);
 
             return Ok(response);
-        }
+        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
@@ -61,8 +76,8 @@ namespace BackendAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] EleveDto elevedto)
         {
-            await _serviceEleve.AddAsync<EleveDto>(elevedto);
-            return CreatedAtAction(nameof(Get), new { id = elevedto.Id }, elevedto);
+            var response = await _serviceEleve.AddAsync<EleveDto>(elevedto);
+            return CreatedAtAction(nameof(Get), new { id = response.Data.Id }, response);
         }
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] EleveDto elevedto)

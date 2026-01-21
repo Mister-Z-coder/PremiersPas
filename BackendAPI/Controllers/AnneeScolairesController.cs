@@ -16,24 +16,35 @@ namespace BackendAPI.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class AnneeScolaireController : ControllerBase
+    public class AnneeScolairesController : ControllerBase
     {
         private readonly IService<Annee_Scolaire> _serviceAnnee_Scolaire;
 
-        public AnneeScolaireController(IService<Annee_Scolaire> serviceAnnee_Scolaire)
+        public AnneeScolairesController(IService<Annee_Scolaire> serviceAnnee_Scolaire)
         {
             _serviceAnnee_Scolaire = serviceAnnee_Scolaire;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetAll([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
+            Expression<Func<Annee_Scolaire, bool>> predicate = e => true; // prédicat par défaut (tout sélectionner)
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                predicate = e =>
+                    (e.AnneeScolaire != 0 && e.AnneeScolaire.ToString().Contains(search));
+            }
             var route = Request.Path.Value;
-            var response = await _serviceAnnee_Scolaire.GetAllAsync<Annee_ScolaireDto>(filter, route);
+            var response = String.IsNullOrWhiteSpace(search)
+                ?await _serviceAnnee_Scolaire.GetAllAsync<Annee_ScolaireDto>(filter, route)
+                : await _serviceAnnee_Scolaire.GetBySearchStringAsync<Annee_ScolaireDto>(filter, route, predicate);
+
             return Ok(response);
 
         }
 
+        /*
         [HttpGet("search")]
         public async Task<IActionResult> GetSearchString([FromQuery] PaginationFilter filter, [FromQuery] string? search)
         {
@@ -49,7 +60,7 @@ namespace BackendAPI.Controllers
             var response = await _serviceAnnee_Scolaire.GetBySearchStringAsync<Annee_ScolaireDto>(filter, route, predicate);
 
             return Ok(response);
-        }
+        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)

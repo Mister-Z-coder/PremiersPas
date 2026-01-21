@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace FrontendMVC.Services.Implementations
 {
-    public class EleveApiService : BaseApiService<EleveViewModel,EleveDto>,IEleveApiService
+    public class EcolesApiService : BaseApiService<EcoleViewModel,EcoleDto>,IEcoleApiService
     {
-        private const string route = "api/v1/eleve";
+        private const string route = "api/v1/ecoles";
 
-        public EleveApiService(IHttpClientFactoryService httpClientFactoryService, IMapper mapper) : base(httpClientFactoryService, route, mapper)
+        public EcolesApiService(IHttpClientFactoryService httpClientFactoryService, IMapper mapper) : base(httpClientFactoryService, route, mapper)
         {
         }
     }

@@ -23,11 +23,12 @@ namespace FrontendMVC.Models.ViewModels
         [Display(Name = "Sexe")]
         public string SexeEleve { get; set; }
 
-        [Display(Name = "Photo de l'élève")]
+        [Display(Name = "Photo")]
         public IFormFile? PhotoFile { get; set; } // upload dans le formulaire
 
         public string? PhotoEleveUrl { get; set; } // chemin de l'image déjà stockée
 
+        [Required]
         [Display(Name = "Lieu de naissance")]
         public string LieuNaisEleve { get; set; }
 

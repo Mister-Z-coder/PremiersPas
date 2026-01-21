@@ -48,9 +48,12 @@ namespace FrontendMVC.Services.Implementations
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<PagedResponse<List<TViewModel>>> GetAllAsync(PaginationFilter filter)
+        public async Task<PagedResponse<List<TViewModel>>> GetAllAsync(string? search, PaginationFilter filter)
         {
-            var url = $"{_route}?pageNumber={filter.PageNumber}&pageSize={filter.PageSize}";
+            var url = String.IsNullOrWhiteSpace(search) 
+                ?$"{_route}?pageNumber={filter.PageNumber}&pageSize={filter.PageSize}"
+                : $"{_route}?search={search}&pageNumber={filter.PageNumber}&pageSize={filter.PageSize}";
+
             var dtopagedResponse =  await _httpClient.GetFromJsonAsync <PagedResponse<List<TDto>>>(url);
 
             //Mapper DTO => ViewModel
@@ -89,15 +92,17 @@ namespace FrontendMVC.Services.Implementations
             };
         }
 
+        /*
         public async Task<PagedResponse<List<TViewModel>>> GetBySearchStringAsync(string? search, PaginationFilter filter)
         {
-            var url = $"{_route}/search?search={search}&pageNumber={filter.PageNumber}&pageSize={filter.PageSize}";
+            var url = $"{_route}?search={search}&pageNumber={filter.PageNumber}&pageSize={filter.PageSize}";
             /*if (!string.IsNullOrEmpty(search))
             {
                 // Ajouter searchString en paramètre GET
                 url += $"&search={Uri.EscapeDataString(search)}";
             }*/
-            var dtopagedResponse = await _httpClient.GetFromJsonAsync<PagedResponse<List<TDto>>>(url);
+            
+        /*var dtopagedResponse = await _httpClient.GetFromJsonAsync<PagedResponse<List<TDto>>>(url);
 
             //Mapper DTO => ViewModel
             return new PagedResponse<List<TViewModel>>
@@ -119,7 +124,8 @@ namespace FrontendMVC.Services.Implementations
                 TotalPages = dtopagedResponse.TotalPages,
                 TotalRecords = dtopagedResponse.TotalRecords
             };
-        }
+        }*/
+
 
         public async Task<Response<TViewModel>> UpdateAsync(int id, TViewModel viewmodel)
         {

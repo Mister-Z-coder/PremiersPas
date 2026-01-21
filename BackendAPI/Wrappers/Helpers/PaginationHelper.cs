@@ -39,10 +39,10 @@ namespace BackendAPI.Wrappers.Helpers
             response.LastPage = roundedTotalPages;
             return response;
         }
-        public static PagedResponse<List<TDto>> CreateErrorPagedResponse<TDto>(string message, List<string> errors = null)
+        public static PagedResponse<List<TDto>> CreateErrorPagedResponse<TDto>(string message, IEnumerable<string>? errors = null)
         {
             var finalMessage = String.IsNullOrWhiteSpace(message) ? "Une erreur est survenue lors du traitement de la requête." : message;
-            return new PagedResponse<List<TDto>>(finalMessage, errors?? new List<string> { finalMessage });
+            return new PagedResponse<List<TDto>>(finalMessage, errors);
         }
 
         public static Response<TDto> CreateResponse<TDto>(TDto data, string message="")
@@ -51,10 +51,12 @@ namespace BackendAPI.Wrappers.Helpers
                 ? (data != null ? "Donnée récupérée avec succès" : "Aucun élément trouvé")
                 : message);
         }
-        public static Response<TDto> CreateErrorResponse<TDto>(string message, List<string> errors = null)
+        public static Response<TDto> CreateErrorResponse<TDto>(string message, IEnumerable<string>? errors = null)
         {
             var finalMessage = String.IsNullOrWhiteSpace(message) ? "Une erreur est survenue lors du traitement de la requête." : message;
-            return new Response<TDto>(finalMessage, errors?? new List<string> { finalMessage });
+            return new Response<TDto>(finalMessage, errors);
+
         }
+
     }
 }
